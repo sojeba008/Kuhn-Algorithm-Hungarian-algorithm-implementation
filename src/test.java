@@ -29,11 +29,11 @@ public class test {
 		//			{"15","inf","13","20"},
 		//	{"5","7","10","6"}
 		//	};
-	//	String[][] tab ={{"inf","8","7"},
+	//String[][] tab ={{"inf","8","7"},
 		//				{"7","6","4"},
-		//	{"0","0","0"}
-		//		};
-		System.out.println(tab[1].length);
+			//{"0","0","0"}
+				//};
+		//System.out.println(tab[1].length);
 		Hongrois hongrois=new Hongrois(tab.length, tab);
 		size=tab.length;
 		String[][] original = new String[size][tab[0].length];
@@ -53,11 +53,17 @@ public class test {
 
 		Boolean estoptimum = false;
 		while (!estoptimum) {
-			if (Hongrois.optimum(Hongrois.coupling(tab)) == false) {
-				Hongrois.process(tab);
+		
+			tab=Hongrois.coupling(tab);
+			if (Hongrois.optimum((tab)) == false) {
+				tab=Hongrois.process(tab);
+				
+				
 			} else {
 				estoptimum=true;
+				break;
 			}
+			
 		}
 		System.out.println("Optimum Matrix is: ");
 		Hongrois.toString(tab);
@@ -85,7 +91,7 @@ public class test {
 		
 		
 		int pgd = Hongrois.greatestValue(original);
-		System.out.println(pgd);
+		//System.out.println(pgd);
 		String[][] original2 = new String[tab.length][tab.length];
 
 		for (int i = 0; i < tab.length; i++) {
@@ -117,9 +123,11 @@ public class test {
 		estoptimum = false;
 		while (!estoptimum) {
 			if (Hongrois.optimum(Hongrois.coupling(tab)) == false) {
+				tab=Hongrois.coupling(tab);
 				Hongrois.process(tab);
 			} else {
 				estoptimum=true;
+				break;
 			}
 		}
 		System.out.println("Optimum Matrix is:  ");

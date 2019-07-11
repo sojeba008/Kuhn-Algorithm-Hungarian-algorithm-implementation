@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public class Hongrois {
 	private int size;
@@ -15,18 +16,134 @@ public class Hongrois {
 	}
 	
 	
-	public static void process(String[][] tab) {
+	public static String[][] process(String[][] tab) {
 		String[][] tabb;
 		String[] tabv;
-		tabb = coupling(tab);
-		int lwst = 0;
-		// afficher(tabb);
-		tabv = sous_matrice_dadjonction(tabb);
+		tab = coupling(tab);
+
+		ArrayList lineWithoutZe = new ArrayList();
+		lineWithoutZe.clear();
+		ArrayList ColWithZbOnMakedLine = new ArrayList(); 
+		ColWithZbOnMakedLine.clear();
+		//System.out.println(lineWithoutZe.contains("5"));;
+		int lineNumber=-1;
+		for (String[] line : tab) {
+			int counter=0;
+			lineNumber+=1;
+			for (String el : line) {
+				if(el.equals("ze")) break;
+				counter+=1;
+			}
+			if(counter==tab[0].length) lineWithoutZe.add(lineNumber);
+		}
+		
+		
+		int oldlineWithoutZeSize=-1;
+		int oldColWithZbOnMakedLineSize=-1;
+		int colNumber=-1;
+		//System.out.println(lineWithoutZe.size());
+		while(oldlineWithoutZeSize!=lineWithoutZe.size() || oldColWithZbOnMakedLineSize!= ColWithZbOnMakedLine.size())
+		{	
+			oldlineWithoutZeSize=lineWithoutZe.size();
+			oldColWithZbOnMakedLineSize= ColWithZbOnMakedLine.size();
+			lineNumber=-1;
+			
+			for (String[] line : tab) {
+				lineNumber+=1;
+				colNumber=-1;
+				for (String el : line) {
+					colNumber+=1;
+					if(el.equals("zb") && lineWithoutZe.contains(lineNumber) && !ColWithZbOnMakedLine.contains(colNumber)){
+						ColWithZbOnMakedLine.add(colNumber);
+					}
+				}
+			}
+			
+			
+
+			lineNumber=-1;
+			for (String[] line : tab) {
+				lineNumber+=1;
+				colNumber=-1;			
+				for (String el : line) {
+					colNumber+=1;
+					if(el.equals("ze") && ColWithZbOnMakedLine.contains(colNumber) && !lineWithoutZe.contains(lineNumber)){
+						lineWithoutZe.add(lineNumber);
+					}
+					
+				}
+			}
+			
+			
+		}
+		
+		
 
 		
-	
-		lwst = lowest(tabv);
-		improvement(tab, lwst);
+		ArrayList ValuesOfRemainingMatrix=new ArrayList();
+		ValuesOfRemainingMatrix.clear();
+		lineNumber=-1;
+		for (String[] line : tab) {
+			lineNumber+=1;
+			colNumber=-1;			
+			for (String el : line) {
+				colNumber+=1;
+				if(lineWithoutZe.contains(lineNumber) && !ColWithZbOnMakedLine.contains(colNumber)) {
+					ValuesOfRemainingMatrix.add(el);
+				}
+				
+			}
+		}
+		//System.out.println(lineWithoutZe);
+		//System.out.println(ColWithZbOnMakedLine);
+		//System.out.println(ValuesOfRemainingMatrix);
+		int lowerstValue=Integer.MAX_VALUE;
+		for (Object object : ValuesOfRemainingMatrix) {
+			if(object!="inf"){
+				if(Integer.parseInt((String) object)<lowerstValue)
+				{
+					lowerstValue=Integer.parseInt((String) object);
+				}
+			}
+			
+		}
+		//System.out.println(lowerstValue);
+		
+		for (int i = 0; i<tab.length;i++)
+		{
+			for (int j=0;j<tab[0].length;j++)
+			{
+				if(tab[i][j]=="ze" || tab[i][j]=="zb") tab[i][j]="0";
+				//System.out.print(" "+tab[i][j]);
+			}
+		}
+		
+		//Hongrois.toString(tab);
+		for (int i = 0; i<tab.length;i++) {		
+			for (int j=0;j<tab[0].length;j++) {
+				if(!lineWithoutZe.contains(i) && ColWithZbOnMakedLine.contains(j)) {
+					if(tab[i][j]=="inf") tab[i][j]=Integer.toString(Integer.MAX_VALUE);
+					tab[i][j]=Integer.toString(Integer.parseInt(tab[i][j])+lowerstValue);
+				}
+				
+			}
+		}
+		
+		for (int i = 0; i<tab.length;i++) {		
+			for (int j=0;j<tab[0].length;j++) {
+				if(lineWithoutZe.contains(i) && !ColWithZbOnMakedLine.contains(j)) {
+					if(tab[i][j]=="inf") tab[i][j]=Integer.toString(Integer.MAX_VALUE);
+					tab[i][j]=Integer.toString(Integer.parseInt(tab[i][j])-lowerstValue);
+					//System.out.println(tab[i][j]);
+				}
+				
+			}
+		}
+		
+		
+
+		return tab;
+		
 
 	}
 
@@ -120,149 +237,10 @@ public class Hongrois {
 		return tabl;
 	}
 
-	public static String[] sous_matrice_dadjonction(String[][] tabb) {
-		int count = 0, temp = 0;
+	//public static String[] sous_matrice_dadjonction(String[][] tab) {
+		
 
-		boolean found = false;
-		int[] lncpdze = new int[tabb.length];
-		int[] cazb = new int[tabb.length];
-		int[] lazedcm = new int[tabb.length];
-		for (int i = 0; i < tabb.length; i++) {
-			for (int j = 0; j < tabb[0].length; j++) {
-				if (tabb[i][j] == "ze") {
-					temp = temp + 1;
-				}
-			}
-			if (temp == 0) {
-				lncpdze[count] = i;
-				count = count + 1;
-			}
-			temp = 0;
-		}
-
-		ln = lncpdze;
-
-		temp = 0;
-		int tt = count;
-		a = tt;
-		count = 0;
-		int lig = 0;
-		for (int i = 0; i < tabb.length; i++) {
-			for (int j = 0; j < tabb[0].length; j++) {
-				if (tabb[i][j] == "zb") {
-					temp = temp + 1;
-					lig = i;
-
-					// System.out.println(i +" et " +j +" et "+lig);
-					if (temp != 0) {
-						for (int k = 0; k < tt; k++) {
-							if (lig == lncpdze[k]) {
-								found = true;
-								if (found == true) {
-									cazb[count] = j;
-									count = count + 1;
-								}
-							}
-						}
-
-					}
-				}
-				temp = 0;
-			}
-
-		}
-
-		c = cazb; // t
-
-		int t = count - 1;
-		b = t;
-		temp = 0;
-		count = 0;
-		int col = 0;
-		found = false;
-
-		for (int i = 0; i < tabb.length; i++) {
-			for (int j = 0; j < tabb[0].length; j++) {
-				if (tabb[i][j] == "ze") {
-					temp = temp + 1;
-					col = j;
-				}
-			}
-			if (temp != 0) {
-				for (int k = 0; k <= t; k++) {
-					if (col == cazb[k]) {
-						found = true;
-						// System.out.println(col);
-					}
-				}
-				if (found == true) {
-					lazedcm[count] = i;
-					count = count + 1;
-				}
-			}
-			temp = 0;
-			found = false;
-		}
-
-		la = lazedcm; // count
-		C = count;
-		for (int i = 0; i < count; i++) {
-			// System.out.println(la[i]);
-		}
-
-		int s = 0, ss = 0;
-
-		boolean verif = false, verif2 = false;
-
-		int[] ligne = new int[tabb.length * tabb.length];
-		for (int i = 0; i <= tt; i++) {
-			try {
-				ligne[s] = lncpdze[i];
-				// System.out.println(ligne[s]);
-				s = s + 1;
-			} catch (Exception e) {
-
-			}
-		}
-
-		for (int i = 0; i <= count; i++) {
-			ligne[s] = lazedcm[i];
-
-			s = s + 1;
-		}
-
-		String[] tabbb = new String[tabb.length*tabb[0].length];
-		for (int i = 0; i < tabb.length; i++) {
-			for (int j = 0; j <= tt; j++) {
-				if ((i == ligne[j])) {
-					verif = true;
-
-				}
-
-			}
-			if (verif == true) {
-				for (int k = 0; k < tabb.length; k++) {
-					for (int j = 0; j <= t; j++) {
-						if ((i == cazb[j])) {
-							verif2 = true;
-						}
-					}
-					if (verif2 = true) {
-						tabbb[ss] = tabb[i][k];
-					}
-
-					ss = ss + 1;
-				}
-			}
-			verif = false;
-			verif2 = false;
-		}
-
-
-		return tabbb;
-		// System.out.println(lowest(tabbb));
-
-	}
+	//}
 
 	public static void improvement(String[][] tab, int lwst) {
 		boolean verif = true;
@@ -447,18 +425,18 @@ public class Hongrois {
 		//return verif;
 	}
 
-	public static void principal(String[][] tab) {
-		String[][] tabb;
-		String[] tabv;
-		tabb = coupling(tab);
-		int lwst = 0;
-		System.out.println("");
+	//public static void principal(String[][] tab) {
+		//String[][] tabb;
+		//String[] tabv;
+		//tabb = coupling(tab);
+		//int lwst = 0;
+		//System.out.println("");
 		// toString(tabb);
-		tabv = sous_matrice_dadjonction(tabb);
-		lwst = lowest(tabv);
-		improvement(tab, lwst);
+		//tabv = sous_matrice_dadjonction(tabb);
+		//lwst = lowest(tabv);
+		//improvement(tab, lwst);
 
-	}
+	//}
 
 	public static int greatestValue(String[][] tab) {
 		int lwst = 0;
